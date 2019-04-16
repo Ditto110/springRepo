@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>业务列表</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"	name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<link rel="stylesheet" href="../../plugins/datetimepicker/bootstrap-datetimepicker.min.css" />
+<link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+<style>
+.control_img {
+	background: #000000
+}
+
+.row {
+	border-top: 0px solid;
+	margin: 0;
+	padding: 20px 2px 0px 2px;
+}
+</style>
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/jquery.dragsort-0.5.2.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="../../plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="../../plugins/daterangepicker/moment.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/FileSaver.js"></script>
+<script src="../../js/Blob.js"></script>
+<script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+
+</head>
+<body>
+<div id="pListValue" v-cloak>
+	<div v-show="showList">
+		<table id="pListGrid"></table>
+		<div id="jqGridPager"></div>
+	</div>
+</div>
+
+<div id="defineProduct" v-cloak>
+	<div v-show = "!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal col-md-offset-3">
+			<div class="form-group">
+				<label class="label-info">产品分类:</label>
+				<select class="form-control" v-model = "product.type" id="firstLevel_productType" onchange="vm.firstLvel_productTypeChange()">
+					<option value="1">VIP 会员</option>
+					<option value="2">单片</option>
+				</select>
+			</div>
+			<div v-show = "VIPType_show">
+				<div class="form-group">
+					<label class="label-info">VIP产品类型:</label>
+					<select class="form-control" id="secondLevel_productType" v-model = "product.VIPThirdProductId" onchange="vm.VIPProductInput()">
+						<option v-for = "p in product.vipList" :value = "p.id" :vipType = "p.vipType">{{p.name}}</option>
+					</select>
+				</div>
+			</div>
+			<div v-show = "!VIPType_show">
+				<div class="form-group">
+					<label class="label-info">单片ID:</label>
+					<input type="text" class="form-control" v-model = "product.thirdProductId"  onblur="vm.SingleProductIDInput() "/>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="label-info">产品名称:</label>
+				<input class="form-control " type="text" id="product_IdName"  v-model="product.productName" title="请输入产品名称或产品ID">
+			</div>
+			<div class="form-group" >
+				<label class="label-info">积分:</label>
+				<input type="text" class="form-control" v-model = "product.point"/>
+			</div>
+			<div class="form-group" >
+				<label class="label-info">发布状态:</label>
+				<select class="form-control" id="product_publish" v-model = "product.publish">
+					<option value="1">上架</option>
+					<option value="0">下架</option>
+				</select>
+			</div>
+			<div class="form-group" >
+				<label class="label-info">时效限制:</label>
+				<select class="form-control" id="product_avail" v-model = "product.avail">
+					<option value="0">首次购买</option>
+					<option value="1">每月一次购买</option>
+					<!--<option value="2">无限次购买</option>-->
+				</select>
+			</div>
+			<div class="form-group" >
+				<label class="label-info">描述:</label>
+				<input type="text" class="form-control" id="product_desc" v-model = "product.desc"/>
+			</div>
+			<div class="form-group" >
+				<a class="btn btn-default" onclick="vm.save()">保存</a>
+				<a class="btn btn-default" onclick="vm.back()">返回</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../../js/modules/app/tbJobList.js"></script>
+<script src="../../js/modules/app/tbEditJob.js"></script>
+</body>
+</html>
