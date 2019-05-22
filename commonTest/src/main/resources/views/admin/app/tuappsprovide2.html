@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+    <link rel="stylesheet" href="../../css/main.css">
+
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/bootstrap-select.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="tab == 'firstStep'">
+        <div class="form-group col-sm-2">
+            <label class="control-label">用途：</label>
+            <select class="form-control" v-model="appUsesSelected">
+                <option v-for="option in appUsesSelectOptions" :value="option">
+                    {{option.text}}
+                </option>
+            </select>
+        </div>
+        <div class="form-group col-sm-2">
+            <label class="control-label">型号：</label>
+            <select class="form-control" v-model="deviceTypeSelected">
+                <option v-for="deviceType in deviceTypeList" :value="deviceType">
+                    {{deviceType.devicetype}}
+                </option>
+            </select>
+        </div>
+        <div class="form-group col-sm-2">
+            <label class="control-label">渠道：</label>
+            <select class="form-control" v-model="customerSelected">
+                <option v-for="customerMap in customerMaps" :value="customerMap">
+                    {{customerMap.customername}}
+                </option>
+            </select>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="col-sm-2">
+            <a class="btn btn-success" @click="nextStep">
+                <i class="glyphicon glyphicon-chevron-right"></i>&nbsp;下一步</a>
+        </div>
+    </div>
+    <div v-show="tab == 'secondStep'">
+
+        <div class="col-sm-12">
+            <a class="btn btn-success" @click="preStep">
+                <i class="glyphicon glyphicon-chevron-left"></i>&nbsp;上一步</a>
+        </div>
+
+        <div class="col-sm-12" style="margin-top: 20px; margin-bottom: 20px; font-size: medium">
+            <strong>用途：</strong>{{appUsesSelected.text}}&nbsp;&nbsp;
+            <strong>型号：</strong>{{deviceTypeSelected.devicetype}}&nbsp;&nbsp;
+            <strong>型号：</strong>{{customerSelected.customername}}
+        </div>
+
+        <div class="grid-btn" style="margin-top: 20px">
+            <div class="form-group col-sm-2">
+                <label class="control-label">应用名称：</label>
+                <input class="form-control" type="text" v-model="queryAppName"
+                       @keyup.enter="query">
+            </div>
+            <div class="form-group col-sm-2">
+                <label class="control-label">应用包名：</label>
+                <input class="form-control" type="text" v-model="queryAppPackage"
+                       @keyup.enter="query">
+            </div>
+            <div class="form-group col-sm-2">
+                <label class="control-label">&nbsp;&nbsp;</label>
+                <div class="input-group">
+                    <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+                    <a class="btn btn-primary" v-if="hasPermission('tuappsprovide2:del')" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+
+        <div class="grid-btn" style="margin-top: 20px">
+            <div class="form-group col-sm-2 col-md-2">
+                <label class="control-label">型号：</label>
+                <select class="form-control" v-model="deviceTypeSelected4App">
+                    <option v-for="deviceType in deviceTypeList4App" :value="deviceType">
+                        {{deviceType.devicetype}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group col-sm-2 col-md-2 ">
+                <label class="control-label">渠道：</label>
+                <select class="form-control" v-model="customerSelected4App">
+                    <option v-for="customerMap in customerMaps4App" :value="customerMap">
+                        {{customerMap.customername}}
+                    </option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group col-sm-2">
+                <label class="control-label">应用名称：</label>
+                <input class="form-control" type="text" v-model="queryAddAppName"
+                       @keyup.enter="queryAppList">
+            </div>
+            <div class="form-group col-sm-2">
+                <label class="control-label">&nbsp;&nbsp;</label>
+                <div class="input-group">
+                    <a class="btn btn-default" @click="queryAppList"><i class="fa fa-search"></i>&nbsp;查询</a>
+                    <a class="btn btn-primary" v-if="hasPermission('tuappsprovide2:add:batch')" @click="add"><i class="fa fa-plus"></i>&nbsp;批量添加</a>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <table id="appJqGrid"></table>
+        <div id="appJqGridPager"></div>
+    </div>
+    <div id="pic" class="modal fade" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                    <h4 class="modal-title">{{ labelTitlePic }}</h4>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 10px">
+                        <span><strong>应用名称：</strong>{{ labelAppNamePic }}</span>
+                        <span style="margin-left: 20px"><strong>应用包名：</strong>{{ labelPackagePic }}</span>
+                    </div>
+                    <img style="width: 360px; height: 240px; margin: 10px" :src="picUrl">
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-footer">
+                    <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../js/modules/app/appCommon.js"></script>
+<script src="../../js/modules/app/tuappsprovide2.js"></script>
+
+</body>
+</html>

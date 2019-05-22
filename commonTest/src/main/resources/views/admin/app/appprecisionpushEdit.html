@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css"/>
+    <link rel="stylesheet" href="../../css/main.css">
+
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/bootstrap-select.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+</head>
+<body>
+<label class="control-label">精准推送计划</label>
+
+<section id="precisionPushGrid" v-cloak>
+    <div class="form-group col-sm-2">
+        <label class="control-label">精准推送计划名称：</label>
+        <input class="form-control" type="text" v-model="pushName">
+    </div>
+</section>
+<div class="clearfix"></div>
+<section id="appGrid" v-cloak>
+    <label class="control-label">应用选择：</label>
+    <div class="grid-btn" style="margin-top: 20px">
+        <div class="form-group col-sm-2" style="display:none">
+            <label class="control-label">型号：</label>
+            <select class="form-control" v-model="deviceTypeSelected">
+                <option v-for="deviceType in deviceTypeList" :value="deviceType.devicetypeid">
+                    {{deviceType.devicetype}}
+                </option>
+            </select>
+        </div>
+        <div class="form-group col-sm-2" style="display:none">
+            <label class="control-label">渠道：</label>
+            <select class="form-control" v-model="customerSelected">
+                <option v-for="customerMap in customerMaps" :value="customerMap.customerid">
+                    {{customerMap.customername}}
+                </option>
+            </select>
+        </div>
+        <div class="clearfix"></div>
+        <div class="form-group col-sm-2">
+            <label class="control-label">应用名称：</label>
+            <input class="form-control" type="text" v-model="queryAddAppName"
+                   @keyup.enter="query">
+        </div>
+        <div class="form-group col-sm-2">
+            <label class="control-label">&nbsp;&nbsp;</label>
+            <div class="input-group">
+                <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+                <a class="btn btn-primary" @click="addBatch"><i class="fa fa-plus"></i>&nbsp;批量添加</a>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-8">
+            <table id="appJqGrid"></table>
+            <div id="appJqGridPager"></div>
+        </div>
+        <div class="col-md-4">
+            <table id="addAppJqGrid"></table>
+            <div id="addAppJqGridPager"></div>
+        </div>
+    </div>
+</section>
+<label class="control-label">sn导入：</label>
+<section id="snnoGrid" v-cloak>
+    <div class="grid-btn" style="margin-top: 20px">
+        <div class="row clearfix">
+            <label class="control-label col-sm-1">添加sn：</label>
+            <div class=" col-sm-2">
+                <input class="form-control" type="text" v-model="inputSn">
+            </div>
+            <div class=" col-sm-1">
+                <a class="btn btn-primary" @click="addSn"><i class="fa fa-plus"></i>添加</a>
+            </div>
+            <div class=" col-sm-2">
+                <a class="btn btn-primary " data-toggle="modal"
+                   data-target="#excelDialog"><i class="fa fa-plus"></i>&nbsp;从Excel批量添加</a>
+            </div>
+        </div>
+
+        <div class="col-md-12" style="margin-top: 20px">
+            <table id="addSnnoJqGrid"></table>
+            <div id="addSnnoJqGridPager"></div>
+        </div>
+    </div>
+</section>
+<section>
+    <a class="btn btn-primary col-sm-1" onclick="publishPush()">发布</a>
+    <a class="btn btn-default col-sm-1" href="appprecisionpush.html">返回</a>
+</section>
+<section>
+<div id="excelDialog" v-cloak  class="modal fade col-sm-12 max-height" role="dialog">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">Excel导入</div>
+        </div>
+
+        <div class="panel-body">
+            <div class="col-md-12 form-group">
+                <label for="uploadControl">上传Excel：</label>
+                <div id="fileQueue">
+                </div>
+                <input id="uploadControl" type="file">
+                <div class="well" style="width: 50%; margin-top: 10px">
+                    <p>说明： Excel表中需要包含列名"SN"或"SNNO"或"序列号"，不区分大小写
+                </div>
+            </div>
+            <div class="col-md-12 form-group">
+                <a class="btn btn-warning col-md-2" data-dismiss="modal">返回</a>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<script src="../../js/modules/app/appprecisionpushEdit.js"></script>
+</body>
+</html>

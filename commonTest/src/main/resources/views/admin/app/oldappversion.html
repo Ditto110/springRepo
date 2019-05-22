@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+	name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet"
+	href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet"
+	href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<link rel="stylesheet"
+	href="../../plugins/datetimepicker/bootstrap-datetimepicker.min.css" />
+<link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+<style>
+.control_img {
+	background: #000000
+}
+</style>
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/jquery.dragsort-0.5.2.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script
+	src="../../plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script
+	src="../../plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="../../plugins/daterangepicker/moment.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+
+</head>
+<body>
+	<div id="rrapp" v-cloak>
+		<div v-show="showList">
+			<div class="grid-btn">
+				<a class="btn btn-warning" onclick="history.go(-1);">返回</a>
+			</div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+
+		<div v-show="!showList" class="panel panel-default" id="wait_div">
+			<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-4 control-label">APK文件*</div>
+					<div class="col-sm-8">
+						<table>
+							<tr>
+								<td><input type="file" id="apkFile" name="apkFile" /></td>
+								<td><span style="padding-left: 10px;" id="apkName"></span></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用包名*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control"
+							v-model="tbApp.packagename" placeholder="" id="packageName"
+							readonly="readonly" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用版本号*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control"
+							v-model="tbAppVersion.versioncode" placeholder=""
+							id="versionCode" readonly="readonly" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用版本名*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control"
+							v-model="tbAppVersion.versionname" placeholder=""
+							id="versionName" readonly="readonly" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">支持最低安卓版本*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control"
+							v-model="tbApp.minsdkversion" placeholder="" id="minSdkVersion"
+							readonly="readonly" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用名称*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="tbApp.name"
+							placeholder="" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用别名*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="tbApp.aliasname"
+							placeholder="" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用图标</div>
+					<div class="col-sm-8">
+						<input type="file" id="iconFile" name="iconFile" /> <img src=""
+							width="100" height="100" id="iconSrc"
+							style="display: none; cursor: pointer; margin-top: 10px;"
+							onclick="main.removeicon()" title="点击删除图片" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用小图标</div>
+					<div class="col-sm-8">
+						<input type="file" id="siconFile" name="siconFile" /> <img src=""
+							width="100" height="100" id="siconSrc"
+							style="display: none; cursor: pointer; margin-top: 20px;"
+							onclick="main.removeSicon()" title="点击删除图片" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用大图标</div>
+					<div class="col-sm-8">
+						<input type="file" id="biconFile" name="biconFile" /> <img
+							width="100" height="100" id="biconSrc"
+							style="display: none; cursor: pointer; margin-top: 20px;"
+							onclick="main.removeBicon()" title="点击删除图片" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">预览图片</div>
+					<div class="col-sm-8">
+						<input type="file" id="preiconFile" name="preiconFile" />
+						<ul id="preiconUL" style="margin-top: 20px; margin-left: -30px;"></ul>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用背景图片</div>
+					<div class="col-sm-8">
+						<input type="file" id="bgiconFile" name="bgiconFile" /> <img
+							src="" width="100" height="100" id="bgiconSrc"
+							style="display: none; cursor: pointer; margin-top: 20px;"
+							onclick="main.removeBgicon()" title="点击删除图片" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">一级分类*</div>
+					<div class="col-sm-8">
+						<select class="form-control" v-model="tbClass.firstClassId"
+							@change="firstClassIdSelect">
+							<option value="-1">全部</option>
+							<option v-for="item in tbClass.firstClassList"
+								v-bind:value="item.classId">{{item.className}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">二级分类*</div>
+					<div class="col-sm-8">
+						<select class="form-control" multiple="multiple"
+							v-model="tbClass.secondClassId">
+							<option v-for="item in tbClass.secondClassList"
+								v-bind:value="item.classId">{{item.className}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用描述</div>
+					<div class="col-sm-8">
+						<textarea cols="20" rows="5" class="form-control"
+							v-model="tbApp.description" placeholder=""></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用推荐语</div>
+					<div class="col-sm-8">
+						<textarea cols="20" rows="3" class="form-control"
+							v-model="tbApp.shortdesc" placeholder=""></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">更新描述语</div>
+					<div class="col-sm-8">
+						<textarea cols="20" rows="3" class="form-control"
+							v-model="tbAppVersion.updatedesc" placeholder=""></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">应用星级</div>
+					<div class="col-sm-8">
+						<select class="form-control" v-model="tbApp.startlevel">
+							<option value="1">1星</option>
+							<option value="2">2星</option>
+							<option value="3">3星</option>
+							<option value="4">4星</option>
+							<option value="5">5星</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">升级类型</div>
+					<div class="col-sm-8">
+						<input type="radio" v-model="tbAppVersion.upgradetype" value="0" />普通升级&nbsp;&nbsp;
+						<input type="radio" v-model="tbAppVersion.upgradetype" value="1" />强制升级
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">安全认证</div>
+					<div class="col-sm-8">
+						<input type="radio" v-model="tbApp.safecert" value="0" />不显示&nbsp;&nbsp;
+						<input type="radio" v-model="tbApp.safecert" value="1" />显示
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">人工复检</div>
+					<div class="col-sm-8">
+						<input type="radio" v-model="tbApp.review" value="0" />不显示&nbsp;&nbsp;
+						<input type="radio" v-model="tbApp.review" value="1" />显示
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">操控方式</div>
+					<div class="col-sm-8">
+						<!-- 遥控器 -->
+						<input type="checkbox" v-model="other.controlstyle" value="0" /><img
+							class="control_img"
+							src="../../images/control-style/REMOTE_CONTROLLER.png" />&nbsp;&nbsp;
+						<!-- 游戏手柄 -->
+						<input type="checkbox" v-model="other.controlstyle" value="1" /><img
+							class="control_img" src="../../images/control-style/GAMEPAD.png" />&nbsp;&nbsp;
+						<!-- 鼠标 -->
+						<input type="checkbox" v-model="other.controlstyle" value="2" /><img
+							class="control_img" src="../../images/control-style/MOUSE.png" />&nbsp;&nbsp;
+						<!-- 手机控制 -->
+						<input type="checkbox" v-model="other.controlstyle" value="3" /><img
+							class="control_img"
+							src="../../images/control-style/PHONE_CONTROL.png" />&nbsp;&nbsp;
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">是否所有版本升级</div>
+					<div class="col-sm-8">
+						<select class="form-control" v-model="tbAppVersion.upgradeall"
+							@change="upgradeallSelect">
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group" v-show="!showMinVersion">
+					<div class="col-sm-4 control-label">最低升级版本号*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control"
+							v-model="tbAppVersion.minversion" placeholder="0" />
+					</div>
+				</div>
+				<div class="form-group" v-show="!showMaxVersion">
+					<div class="col-sm-4 control-label">最高升级版本号*</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control"
+							v-model="tbAppVersion.maxversion" placeholder="0" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">作者</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="tbApp.author"
+							placeholder="" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">蜜币</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="tbApp.beecoin" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">维币</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="tbApp.weicoin" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">派影视积分</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="tbApp.weiPoint" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">虚拟下载次数</div>
+					<div class="col-sm-8">
+						<input type="text" class="form-control"
+							v-model="tbApp.visualdownloadnum" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-5 control-label"></div>
+					<input type="button" class="btn btn-primary" @click="saveOrUpdate"
+						value="确定" /> &nbsp;&nbsp;<input type="button"
+						class="btn btn-warning" onclick="queryVM.reload();" value="返回" />
+				</div>
+			</form>
+		</div>
+
+	</div>
+	<script src="../../js/uploadFile.js"></script>
+	<script src="../../js/modules/app/oldappversion.js"></script>
+	<script src="../../js/modules/app/tbapp.js"></script>
+	<script src="../../js/modules/app/editapp.js"></script>
+</body>
+</html>

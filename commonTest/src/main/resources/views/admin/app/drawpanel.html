@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords"
+          content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development">
+    <title>模板编辑</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link href="../../libs/grid-stack/grid-stack/gridstack.min.css" rel="stylesheet">
+    <link href="../../libs/grid-stack/grid-stack/gridstack-extra.scss" rel="stylesheet">
+    <!--<link href="../../libs/gridstack/gridstack.css" rel="stylesheet">-->
+    <link href="../../libs/grid-stack/css/beeDragView.css" rel="stylesheet">
+    <style type="text/css">
+        .modal-dialog .max-height {
+            max-height: 500px;
+            overflow: auto;
+        }
+    </style>
+
+    <!--[if lt IE 9]>
+    <script src="../../libs/grid-stack/js/html5shiv.js"></script>
+    <script src="../../libs/grid-stack/js/respond.min.js"></script>
+
+    <![endif]-->
+</head>
+<body>
+
+
+<div>
+    <h1>模板设计</h1>
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div style="padding-bottom: 10px;">
+                    <a type="button" href="addPanelCells.html" class="btn btn-outline btn-info" data-toggle="modal"
+                       data-target="#addModal" id="addModalButton"><span class="glyphicon glyphicon-plus"></span> 新增</a>
+                    &nbsp;
+                    <a type="button" class="btn btn-outline btn-info" data-dismiss="modal"
+                       href="javascript:history.back(-1);">
+                        返回
+                    </a>
+                    &nbsp;<span>拖动到某个位置即可保存坐标信息</span>
+                </div>
+                <div class="container">
+                    <div class="grid-stack-container">
+                        <div class="grid-stack grid-stack-N" id="cells-grid-stack">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="scheduleModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="selectModal" data-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="selectDataModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">选择内容数据</h4>
+                </div>
+                <div class="embed-responsive" style="height: 600px">
+                    <iframe id="freamview" class="embed-responsive-item" src=""></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<!--TODO hardcode-->
+<input id="click_grid_stack_temp_id" hidden="true" value="-1"/>
+<script src="../../libs/grid-stack/js/jquery.min.js"></script>
+<script src="../../libs/grid-stack/bootstrap/js/bootstrap.min.js"></script>
+<script src="../../libs/grid-stack/js/jquery-ui.min.js"></script>
+<script src="../../libs/grid-stack/js/lodash.min.js"></script>
+<script src="../../libs/grid-stack/grid-stack/gridstack.js"></script>
+<!--<script src="../../libs/gridstack/gridstack.js"></script>-->
+<script src="../../libs/grid-stack/grid-stack/gridstack.jQueryUI.min.js"></script>
+<script src="../../libs/grid-stack/js/beeDragView.js"></script>
+
+
+<script>
+
+    var baseURL = "/appstore/";
+    function getUrlParamter(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null)return unescape(r[2]);
+        return null;
+    }
+
+    var panelid = getUrlParamter('panelid');
+
+    $("#addModal").on("hidden.bs.modal", function () {
+        $(this).removeData("bs.modal");
+    });
+    $("#scheduleModel").on("hidden.bs.modal", function () {
+        $(this).removeData("bs.modal");
+    });
+
+    var beeDragView = null;
+    $(function () {
+        loadView(panelid);
+    });
+    function loadView(panelid) {
+        var param = {panelid: panelid};
+
+        $.ajax({
+            type: "POST",
+            data: param,
+            url: baseURL + "uicelltemplate/queryNodes",
+            success: function (data) {
+
+                // 新增之后需要清除之后重新加载
+                var gridA = $('.grid-stack').data('gridstack');
+                if (gridA != null || gridA != undefined) {
+                    gridA.removeAll();
+                }
+
+                var p = {
+                    height: 100,
+                    // 注意返回JSON格式，和launcher返回的JSON格式不同
+                    data: data.data,
+                    ajaxCallback: function (el, data) {
+//                        console.log("queryNodes data:");
+                        $("#addModal .modal-content").html(data);
+                        $("#addModal").modal("show");
+                        var node = beeDragView.getItemLayout(el);
+//                        console.log(node);
+                        $("#row").val(node.row);
+                        $("#column").val(node.column);
+                        $("#rowSize").val(node.rowSize);
+                        $("#columnSize").val(node.columnSize);
+                        if (node.id != null) {
+                            $("#id").val(node.id);
+                        }
+                        $("#imgUrl").val(node.imgUrl);
+                        $("#locked").val(node.locked);
+                    },
+                    removeViewCallback: function (grid, view, node) {
+                        if (node == undefined) {
+                            return;
+                        }
+                        if (!confirm("要删除UI板块？")) {
+                            return;
+                        }
+                        delRow(node.id);
+                        grid.removeWidget(view);
+                    },
+                    dragOrResizeCallback: function () {
+                        saveLayout();
+                    },
+                    dblclickEditUrl: "editPanelCells.html",
+                    dblclickAddUrl: "addPanelCells.html",
+                    width: 24
+                };
+                beeDragView = $('.grid-stack').beeDragView(p);
+            },
+            error: function () {
+                alert("加载出错");
+            }
+        });
+    }
+
+    function delRow(id) {
+        $.ajax({
+            type: "delete",
+            url: baseURL + "uicelltemplate/deleteone/" + id,
+            contentType: "application/json",
+            success: function (data) {
+                if (data.status == 0) {
+                    console.log("删除成功！");
+                }
+            },
+            error: function () {
+                alert("删除失败！")
+            }
+        });
+    }
+
+    function saveLayout() {
+        var records = beeDragView.getLayout();
+        if (null != records && records != 'undefined' && records.length > 0) {
+            for (var i = 0; i < records.length; i++) {
+                records[i].panelid = panelid;
+            }
+        } else {
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: baseURL + "uicelltemplate/updateInBatch",
+            contentType: "application/json",
+            data: JSON.stringify(records),
+            success: function (data) {
+                if (data.status == 0) {
+                }
+            },
+            error: function () {
+                alert("保存失败！");
+            }
+        });
+    }
+</script>
+</body>
+</html>

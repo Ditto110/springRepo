@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form role="form" id="editCellForm" method="post">
+    <div class="modal-body col-sm-12 max-height">
+
+        <div class="form-group col-sm-3">
+            <label>indexOfPanel：</label>
+            <input class="form-control" id="editCellForm_indexOfPanel" name="indexOfPanel" placeholder="indexOfPanel"
+                   type="number">
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label>width：</label>
+            <input class="form-control" id="editCellForm_width" name="width" placeholder="width" type="number">
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label>height：</label>
+            <input class="form-control" id="editCellForm_height" name="hight" placeholder="height" type="number">
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label>是否启用：</label>
+            <select class="form-control" id="editCellForm_publish" name="publish">
+                <option value="1" selected>是</option>
+                <option value="0">否</option>
+            </select>
+        </div>
+    </div>
+
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+    <button type="submit" class="btn btn-primary" onclick="editCellSize()">保存</button>
+</div>
+
+</body>
+
+<script>
+
+
+    var id = $('#click_grid_stack_temp_id').val();
+    // 更新数据
+
+    $.ajax({
+        url: baseURL + "uicelltemplate/info/" + id,
+        contentType: "application/json",
+        success: function (data) {
+            if (data.status == 0) {
+                $('#editCellForm_width').val(data.uiCellTemplate.width);
+                $('#editCellForm_indexOfPanel').val(data.uiCellTemplate.indexOfPanel);
+                $('#editCellForm_height').val(data.uiCellTemplate.hight);
+                $('#editCellForm_publish').val(data.uiCellTemplate.publish);
+            } else {
+                alert("请求错误");
+            }
+        },
+        error: function () {
+            alert("请求错误");
+        }
+    });
+
+    // 保存cells 的 indexOfPanel  width height
+
+    /**
+     * form表单元素的值序列化对象
+     */
+    function serializeObject(form) {
+        var o = {};
+        $.each(form.serializeArray(), function (index) {
+            if (o[this['name']]) {
+                o[this['name']] = o[this['name']] + "," + this['value'];
+            } else {
+                o[this['name']] = this['value'];
+            }
+        });
+        return o;
+    }
+    ;
+
+    function editCellSize() {
+        var form = serializeObject($('#editCellForm'));
+        form.id = id;
+        $.ajax({
+            url: baseURL + "uicelltemplate/update",
+            data: JSON.stringify(form),
+            contentType: "application/json",
+            type: 'post',
+            success: function (data) {
+                $('#addModal').modal('hide');
+                if (data.status == 0) {
+                    console.log("保存成功");
+                    loadView(panelid);
+                } else {
+                    alert("保存出错");
+                }
+            },
+            error: function () {
+                alert("保存出错");
+            }
+        });
+    }
+
+
+</script>
+</html>

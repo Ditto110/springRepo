@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css"/>
+    <link rel="stylesheet" href="../../css/main.css">
+
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/bootstrap-select.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+</head>
+<body>
+
+<section id="mainGrid" v-cloak>
+    <div class="grid-btn">
+        <div class="form-group col-sm-2">
+            <input class="form-control" type="text" placeholder="名称" v-model="queryName"
+                   @keyup.enter="query">
+        </div>
+        <a class="btn btn-info" href="appprecisionpushEdit.html"><i class="fa fa-plus"></i>&nbsp;新增</a>
+        <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+        <a class="btn btn-primary" @click="delBatch"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+        <a class="btn btn-success" data-toggle="modal" data-target="#mapGridModal" data-id=""
+           data-act="info">查看所有推送计划</a>
+    </div>
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
+</section>
+
+<section id="mapGridModal" class="modal fade" role="dialog" v-cloak>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 700px">
+            <div class="modal-body">
+                <input class="form-control col-sm-2" type="text" v-model="count"/>
+                <div>
+                    <div class="form-group col-sm-2">
+                        <input class="form-control" type="text" placeholder="sn" v-model="sn"
+                               @keyup.enter="query">
+                    </div>
+                    <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+                    <a class="btn btn-primary" @click="delBatch"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+
+                    <table id="mapGrid"></table>
+                    <div id="mapGridPager"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="../../js/modules/app/appprecisionpush.js"></script>
+</body>
+</html>

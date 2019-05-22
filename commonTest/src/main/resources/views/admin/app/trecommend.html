@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css"/>
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+
+        <div class="grid-btn">
+            <div class="form-group  form-inline">
+                <label>型号</label>
+                <select class="form-control" v-model="queryParam.devicetypeid" @change="devidetypeSelect">
+                    <option value="" selected>全部</option>
+                    <option v-for="item in queryParam.devicetypeList" v-bind:value="item.devicetypeid">
+                        {{item.devicetype}}
+                    </option>
+                </select>
+                <label>渠道</label>
+                <select class="form-control" v-model="queryParam.customerid">
+                    <option value="" selected>全部</option>
+                    <option v-for="item in queryParam.customerList" v-bind:value="item.customerid">
+                        {{item.customername}}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-btn">
+            <a class="btn btn-primary" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+            <a class="btn btn-info" v-if="hasPermission('trecommend:add')" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            <a class="btn btn-primary" v-if="hasPermission('trecommend:update')" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+            <a class="btn btn-danger" v-if="hasPermission('trecommend:del')" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">统计字段</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.operateTitle" placeholder=""/>
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <div class="col-sm-2 control-label">项目名称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.name" placeholder=""/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">推荐语</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.description" placeholder=""/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">背景图片</div>
+                <div class="col-sm-10">
+                    <input type="file" id="recommendImgFile" name="recommendImgFile"/>
+                    <img width="100" height="100" id="recommendImgSrc"
+                         style="display:none;cursor:pointer;margin-top:20px;"
+                         onclick="main.removeIcon('recommendImgSrc','confirm')" title="点击删除图片"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">排序</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.sort" placeholder=""/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">推荐位用途</div>
+                <div class="col-sm-10">
+                    <select class="form-control" v-model="tRecommend.uses">
+                        <option value="search">搜索推荐位</option>
+                        <option value="detail">详情推荐位</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" v-show="addOrUpdate">
+                <div class="col-sm-2 control-label">状态</div>
+                <div class="col-sm-10">
+
+                    <select class="form-control" v-model="tRecommend.status">
+                        <option value="1">正在编辑</option>
+                        <option value="2">编辑完成</option>
+                        <option value="3">发布</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">跳转类型</div>
+                <div class="col-sm-10">
+                	<input type="text" class="form-control" v-model="tRecommend.intentType" value="Action"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">包名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.packageName" placeholder="包名"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">类名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.className" placeholder="类名"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">Action名</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.action" placeholder="Action名"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">uri</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tRecommend.uriString" placeholder="uri信息"/>
+                </div>
+            </div>
+
+            <div>
+                <!--动态 key -- value 标签 -->
+                <div v-for="(item, index) in items">
+                    <div class="form-group form-inline">
+
+                        <div class="col-sm-2 control-label">key</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="item.key"
+                                   placeholder="key值"/>
+                        </div>
+
+                        <div class="col-sm-2 control-label">value</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="item.value"
+                                   placeholder="value值"/>
+                            <button type="button" class="btn btn-danger" @click="removeParameters(index)">刪除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+
+                    <div class="col-sm-2 control-label"></div>
+                    <div class="col-sm-10">
+                        <button type="button" class="add-btn btn btn-primary" @click="addParameters">新增key-value
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="showDetailsInfo" class="modal fade col-sm-12 max-height" role="dialog">
+    <div class="modal-dialog" role="document" style="background-color:#fff">
+        <div class="modal-body">
+            <form class="form-horizontal">
+	            <div class="form-group">
+	                <div class="col-sm-2 control-label">统计字段</div>
+	                <div class="col-sm-10">
+	                    <input type="text" class="form-control" v-model="tRecommend.operateTitle" placeholder=""/>
+	                </div>
+	            </div>
+            
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">跳转类型</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="tRecommend.intentType" value="Action" readonly/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">包名</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="tRecommend.packageName" readonly/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">类名</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="tRecommend.className" readonly/>
+                    </div>
+                </div>
+                <div class="form-group" v-show="chooseAction">
+                    <div class="col-sm-2 control-label">Action名</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="tRecommend.action" readonly/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">uri</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="tRecommend.uriString" readonly/>
+                    </div>
+                </div>
+
+                <div class="form-group" v-if="Object.keys(items).length == 0">
+                    <div class="col-sm-2 control-label" style="color: #0044cc">没键值对参数</div>
+                </div>
+
+                <div>
+                    <!--动态 key -- value 标签 -->
+                    <div v-for="(item, index) in items">
+                        <div class="form-group form-inline">
+
+                            <div class="col-sm-2 control-label">key</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" v-model="item.key"
+                                       readonly/>
+                            </div>
+
+                            <div class="col-sm-2 control-label">value</div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" v-model="item.value"
+                                       readonly/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+        </div>
+    </div>
+</div>
+
+<div id="addRelationship" class="modal fade col-sm-12 max-height" role="dialog">
+    <div class="modal-dialog" role="document" style="background-color:#fff">
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">机型列表</div>
+                    <div class="col-sm-10">
+                        <ul id="modelTree" class="ztree"></ul>
+                    </div>
+
+                    <div class="col-sm-2 control-label">分组选取</div>
+                    <div class="col-sm-10">
+                        <select class="form-control" v-model="groupId">
+                            <option value="" selected>不选择</option>
+                            <option v-for="item in groudItems" v-bind:value="item.id">
+                                {{item.groupname}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+            <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+        </div>
+    </div>
+</div>
+
+
+<script src="../../js/uploadFile.js"></script>
+<script src="../../js/modules/app/trecommend.js"></script>
+</body>
+</html>

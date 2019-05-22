@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="relativeapp" v-cloak>
+	<div v-show="showList">
+		<div class="row">
+			<div class="form-inline">  
+				<label>应用名称:</label><input type="text" class="form-control" readonly="readonly" id="relativeAppName"/>&nbsp;&nbsp;
+				<a class="btn btn-danger" @click="del">删除</a>&nbsp;&nbsp;
+				<a class="btn btn-warning" onclick="history.go(-1);">返回</a>
+			</div>
+		</div>
+		<table id="relativejqGrid"></table>
+		<div id="relativejqGridPager"></div>
+	</div>
+	
+</div>
+<div id="applist">
+	
+</div>
+    <script src="../../js/modules/app/appCommon.js"></script>
+    <script src="../../js/modules/app/relativeapp.js"></script>
+	
+</body>
+</html>

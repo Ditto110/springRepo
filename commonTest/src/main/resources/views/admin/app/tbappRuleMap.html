@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="!showList">
+			<div class="box-header">
+						<form>
+			            	<div class="row">
+								<div class="col-md-3">
+									<label>应用名称</label>
+									<input type="text" class="form-control" id="appName"/>
+								 </div>
+			              		<div class="col-md-1">
+									<div class="form-group">
+										<label >&nbsp;&nbsp;</label> 
+										<div class="input-group">
+											<a  class="btn btn-primary" @click="query">查询</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						                </div>
+									</div>
+								</div>
+			            </div>
+			          </form>
+			</div>
+		    <table id="jqGrid"></table>
+		    <div id="jqGridPager"></div>
+	    </div>
+    
+    <div v-show="showList" class="panel panel-default">
+		<div class="panel-heading">应用名称：{{title}}</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">机型列表</div>
+			   	<div class="col-sm-10">
+			      <ul id="modelTree" class="ztree"></ul>
+			    </div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../../js/modules/app/tbappRuleMap.js"></script>
+</body>
+</html>

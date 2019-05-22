@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+
+            <div class="form-group col-sm-12 form-inline">
+                <label>名称</label>
+                <select class="form-control " v-model="launcherid">
+                    <option value="" selected>全部</option>
+                    <option v-for="item in launcherItems" v-bind:value="item.id">{{item.names}}</option>
+                </select>
+
+                <label>状态</label>
+                <select class="form-control " v-model="status">
+                    <option value="" selected>全部</option>
+                    <option value="1">正在编辑</option>
+                    <option value="2">编辑完成</option>
+                    <option value="3">发布</option>
+                </select>
+
+                <label>型号</label>
+                <select class="form-control " v-model="queryParam.devicetypeid" @change="devidetypeSelect">
+                    <option value="" selected>全部</option>
+                    <option v-for="item in queryParam.devicetypeList" v-bind:value="item.devicetypeid">
+                        {{item.devicetype}}
+                    </option>
+                </select>
+                <label>渠道</label>
+                <select class="form-control " v-model="queryParam.customerid">
+                    <option value="" selected>全部</option>
+                    <option v-for="item in queryParam.customerList" v-bind:value="item.customerid">
+                        {{item.customername}}
+                    </option>
+                </select>
+
+            </div>
+
+
+        </div>
+        <div class="grid-btn">
+            <a class="btn btn-primary" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+            <a class="btn btn-info" v-if="hasPermission('uilauncher:add')" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            <a class="btn btn-primary" v-if="hasPermission('uilauncher:update')" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+            <a class="btn btn-danger" v-if="hasPermission('uilauncher:del')" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+            <a class="btn btn-success" v-if="hasPermission('uilauncher:copy')" @click="copy"><i class="fa "></i>&nbsp;复制</a>
+
+        </div>
+
+
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">名称</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="uiLauncher.names"/>
+                </div>
+            </div>
+
+            <div class="form-group" v-show="addOrUpdate">
+                <div class="col-sm-2 control-label">状态</div>
+                <div class="col-sm-10">
+
+                    <select class="form-control" v-model="uiLauncher.status">
+                        <option value="1">正在编辑</option>
+                        <option value="2">编辑完成</option>
+                        <option value="3">发布</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">描述</div>
+                <div class="col-sm-10">
+                    <textarea type="text" class="form-control" v-model="uiLauncher.description"
+                              placeholder="请输入描述消息"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="addRelationship" class="modal fade col-sm-12 max-height" role="dialog">
+    <div class="modal-dialog" role="document" style="background-color:#fff">
+        <div class="modal-body">
+            <div class="panel-heading">主界面名称：{{launcherName}}</div>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">机型列表</div>
+                    <div class="col-sm-10">
+                        <ul id="modelTree" class="ztree"></ul>
+                    </div>
+
+                    <div class="col-sm-2 control-label">分组选取</div>
+                    <div class="col-sm-10">
+                        <select class="form-control" v-model="groupId">
+                            <option value="" selected>不选择</option>
+                            <option v-for="item in groudItems" v-bind:value="item.id">
+                                {{item.groupname}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+            <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+        </div>
+    </div>
+</div>
+
+<div id="showRelationDetail" class="modal fade col-sm-12 max-height" role="dialog">
+    <div class="modal-dialog" role="document" style="background-color:#fff">
+        <div class="modal-body">
+            <div class="panel-heading" id="mappingDetailListName">型号渠道映射表</div>
+            <div id="mappingDetailList">mappingDetails</div>
+        </div>
+    </div>
+</div>
+<script src="../../js/modules/app/uilauncher.js"></script>
+</body>
+</html>

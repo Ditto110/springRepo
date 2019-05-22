@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="queryDeviceTypeId" @keyup.enter="query" placeholder="型号Id">
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="queryDeviceTypeName" @keyup.enter="query" placeholder="型号名称">
+            </div>
+            <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+        </div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+        <div style="width: 50%; padding: 10px">
+            <div style="padding-left: 10px">
+                <h2>型号：<span>{{deviceTypeNameSelected}}</span></h2>
+            </div>
+
+            <!-- 已关联渠道panel -->
+            <div class="panel panel-default" style="margin: 10px">
+                <div class="panel-heading">已关联渠道</div>
+                <div style="padding: 20px" id="divCustomerMap">
+                    <div class="form-group" v-for="(customerMap, index) in customerMaps">
+                        <div class="control-label" style="text-align: right; float: left; padding-top: 6px">渠道Id</div>
+                        <div style="float: left; margin-left: 20px">
+                            <input readonly="readonly" type="text" class="form-control" v-model="customerMap.customerid"/>
+                        </div>
+                        <div class="control-label" style="text-align: right; float: left; padding-top: 6px; margin-left: 40px">渠道名称</div>
+                        <div style="float: left; margin-left: 20px; margin-bottom: 20px">
+                            <input readonly="readonly" type="text" class="form-control" v-model="customerMap.customername"/>
+                        </div>
+                        <a style="margin-left: 40px" type="button" class="btn btn-danger" @click="deleteCustomerMap(index)" v-show="editable">删除</a>
+                        <hr style="clear: both"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group col-sm-2" v-show="editable">
+                <label>添加关联渠道</label>
+                <select id="customerSelect" class="form-control" v-model="customerIdSelected">
+                    <option v-for="customer in customers" :value="customer.customerid">{{customer.customername}}</option>
+                </select>
+            </div>
+            <div style="text-align: left; clear: both; margin-left: 20px" v-show="editable">
+                <a type="button" class="btn btn-primary" @click="add">添加</a>
+            </div>
+
+        <div style="text-align: right; padding-right: 10px">
+            <input v-show="editable" type="button" class="btn btn-primary" @click="submit" value="提交"/>&nbsp;&nbsp;
+            <input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+        </div>
+        </div>
+	</div>
+</div>
+
+<script src="../../js/modules/app/tttypecustomermap.js"></script>
+</body>
+</html>

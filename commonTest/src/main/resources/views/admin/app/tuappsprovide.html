@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+          name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+    <link rel="stylesheet" href="../../css/main.css">
+
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/bootstrap-select.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+</head>
+<body>
+
+<section id="mainGrid" v-cloak>
+    <div class="grid-btn">
+        <div class="form-group form-inline col-sm-2">
+            <label>用途</label>
+            <select class="form-control" v-model="appUsesSelected">
+                <option v-for="option in appUsesSelectOptions" :value="option.value">
+                    {{option.text}}
+                </option>
+            </select>
+        </div>
+        <div class="form-group col-sm-2">
+            <input class="form-control" type="text" placeholder="应用名称" v-model="queryAppName"
+                   @keyup.enter="query">
+        </div>
+        <div class="form-group col-sm-2">
+            <input class="form-control" type="text" placeholder="应用包名" v-model="queryAppPackage"
+                   @keyup.enter="query">
+        </div>
+        <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+        <a class="btn btn-primary" v-if="hasPermission('tuappsprovide:del')" @click="delBatch"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+    </div>
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
+</section>
+
+<section id="appGrid" v-cloak>
+    <div class="grid-btn" style="margin-top: 20px">
+        <div class="form-group col-sm-2">
+            <label class="control-label">型号：</label>
+            <select class="form-control" v-model="deviceTypeSelected">
+                <option v-for="deviceType in deviceTypeList" :value="deviceType.devicetypeid">
+                    {{deviceType.devicetype}}
+                </option>
+            </select>
+        </div>
+        <div class="form-group col-sm-2">
+            <label class="control-label">渠道：</label>
+            <select class="form-control" v-model="customerSelected">
+                <option v-for="customerMap in customerMaps" :value="customerMap.customerid">
+                    {{customerMap.customername}}
+                </option>
+            </select>
+        </div>
+        <div class="clearfix"></div>
+        <div class="form-group col-sm-2">
+            <label class="control-label">应用名称：</label>
+            <input class="form-control" type="text" v-model="queryAddAppName"
+                   @keyup.enter="query">
+        </div>
+        <div class="form-group col-sm-2">
+            <label class="control-label">&nbsp;&nbsp;</label>
+            <div class="input-group">
+                <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+                <a class="btn btn-primary" v-if="hasPermission('tuappsprovide:add:batch')" @click="addBatch"><i class="fa fa-plus"></i>&nbsp;批量添加</a>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <table id="appJqGrid"></table>
+    <div id="appJqGridPager"></div>
+</section>
+
+<section id="updateModal" class="modal fade" role="dialog" v-cloak>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">修改</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group form-inline">
+                    <label for="maxNum">最大安装数：</label>
+                    <input id="maxNum" type="text" class="form-control" v-model="appsProvide.maxinstall">
+                </div>
+                <div class="form-group form-inline">
+                    <label>是否限制安装数：</label>
+                    <select class="form-control" v-model="appsProvide.numberlimit">
+                        <option v-for="item in isLimitList" :value="item.value">{{ item.text
+                            }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-success" data-dismiss="modal"
+                   @click="update">提交</a>
+                <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="publishModal" class="modal fade" role="dialog" v-cloak>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">发布</h4>
+            </div>
+            <div class="modal-body">
+                <table id="publishDcJqGrid" style="width: 568px"></table>
+                <div id="publishDcJqGridPager"></div>
+            </div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-success" data-dismiss="modal"
+                   @click="publish">确认发布</a>
+                <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="picModal" class="modal fade" role="dialog" v-cloak>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <h4 class="modal-title">{{ labelTitlePic }}</h4>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 10px">
+                    <span><strong>应用名称：</strong>{{ labelAppNamePic }}</span>
+                    <span style="margin-left: 20px"><strong>应用包名：</strong>{{ labelPackagePic }}</span>
+                </div>
+
+                <img style="width: 360px; height: 240px; margin: 10px" :src="picUrl">
+
+                <div v-show="inPicPush" class="col-md-12 form-group">
+                    <div id="fileQueue">
+                    </div>
+                    <input id="uploadControl" type="file">
+                </div>
+                <div v-show="inPicPush" class="col-md-12 form-group">
+                    <a id="uploadBtn" class="btn btn-info col-md-2">上传</a>
+                    <a id="cancelBtn" class="btn btn-danger col-md-2" style="margin-left: 10px">取消</a>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="ottDescModal" class="modal fade" role="dialog" v-cloak>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <h4 class="modal-title">OTT大师应用推荐语</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group form-inline">
+                    <label for="ottDesc">推荐语：</label>
+                    <textarea id="ottDesc" rows="3" class="form-control" v-model="appsProvide.ottDesc"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-success" data-dismiss="modal"
+                   @click="saveDesc">提交</a>
+                <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="dcModal" class="modal fade" role="dialog" v-cloak>
+    <div class="modal-dialog" role="document">
+        <div v-show="allowEdit" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <h4 class="modal-title" id="dcLabel">{{ labelTitle }}</h4>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 10px">
+                    <span><strong>应用名称：</strong>{{ labelAppName }}</span>
+                    <span style="margin-left: 20px"><strong>应用包名：</strong>{{ labelPackage }}</span>
+                </div>
+                <div class="grid-btn form-inline">
+                    <input type="text" class="form-control" placeholder="型号"
+                           v-model="queryDeviceType" @keyup.enter="query">
+                    <input type="text" class="form-control" placeholder="渠道"
+                           v-model="queryCustomer" @keyup.enter="query">
+                    <a type="button" class="btn btn-default" @click="query"><i
+                            class="fa fa-search"></i>&nbsp;查询</a>
+                    <a type="button" class="btn btn-primary" v-show="inEdit" @click="del"><i
+                            class="fa fa-trash-o"></i>&nbsp;删除</a>
+                </div>
+                <table id="dcJqGrid" style="width: 568px"></table>
+                <div id="dcJqGridPager"></div>
+                <div style="margin-top: 10px">
+                    <span><strong>机型列表：</strong></span>
+                    <ul id="modelTree" class="ztree"></ul>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-primary" v-show="inEdit" @click="add"><span
+                        class="glyphicon glyphicon-plus"></span> 添加</a>
+                <a type="button" class="btn btn-warning" data-dismiss="modal">返回</a>
+            </div>
+        </div>
+        <div v-show="!allowEdit" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    请取消发布
+                </h4>
+            </div>
+            <div class="modal-body">
+                请先取消发布状态，才能进行配置
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="../../js/modules/app/tuappsprovide.js"></script>
+</body>
+</html>

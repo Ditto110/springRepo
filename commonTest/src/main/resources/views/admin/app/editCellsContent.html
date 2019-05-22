@@ -1,0 +1,232 @@
+<!--<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css"/>-->
+
+<!--<script src="../../libs/jquery.min.js"></script>-->
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+<script src="../../js/uploadFile.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script>
+    //重写alert
+    window.alert = function (msg, callback) {
+        layer.alert(msg, function (index) {
+            layer.close(index);
+            if (typeof(callback) === "function") {
+                callback("ok");
+            }
+        });
+    }
+
+    //重写confirm式样框
+    window.confirm = function (msg, callback) {
+        layer.confirm(msg, {btn: ['确定', '取消']},
+            function () {//确定事件
+                if (typeof(callback) === "function") {
+                    callback("ok");
+                }
+            });
+    }
+</script>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">编辑运营位信息</h4>
+</div>
+<div role="form" id="editCellContentForm">
+    <div class="modal-body col-sm-12 max-height">
+
+        <div class="form-group col-sm-8">
+            <label>是否启用：</label>
+            <select class="form-control" v-model="ui_cell.publish">
+                <option value="1" selected>是</option>
+                <option value="0">否</option>
+            </select>
+        </div>
+
+        <div class="form-group col-sm-8">
+            <label>运营统计字段</label>
+            <input class="form-control col-sm-8" v-model="ui_cell.operateTitle"/>
+        </div>
+        <div class="form-group col-sm-8">
+            <label>项目名称</label>
+            <input class="form-control col-sm-8" v-model="ui_cell.name"/>
+        </div>
+        <div class="form-group col-sm-8">
+            <label>推荐语</label>
+            <input class="form-control col-sm-8" v-model="ui_cell.description"/>
+        </div>
+
+        <div class="form-group col-sm-8">
+
+            <label>参数模板</label>
+            <select class="form-control" v-model="templateId" @change="selectTemplate">
+                <option value="" selected>选择参数模板</option>
+                <option v-for="item in parametersItems" v-bind:value="item.id">{{item.name}}</option>
+            </select>
+
+        </div>
+
+
+        <div class="form-group col-sm-8">
+
+            <label>上次编辑选取的模板</label>
+            <input class="form-control col-sm-8" readonly="readonly" v-model="ui_cell.templateName"/>
+        </div>
+
+        <div class="form-group col-sm-8">
+
+            <label>跳转类型</label>
+            <input class="form-control col-sm-8" readonly="readonly" v-model="ui_cell.intentType"
+                   @change="selectIntentType"/>
+        </div>
+
+        <div class="form-group col-sm-8">
+            <label>参数值</label>
+            <div v-if="Object.keys(items).length == 0">
+                <span style="color: #0044cc">没键值对参数</span>
+            </div>
+            <div v-for="(item, index) in items">
+                <div class="form-group ">
+
+                    <div class="col-sm-2 control-label">key</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="item.key" readonly="true"
+                               placeholder="key值"/>
+                    </div>
+
+                    <div class="col-sm-2 control-label">value</div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" v-model="item.value"
+                               placeholder="value值"/>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 选择 intentType 为 install 时候需要填写的额外参数 -->
+        <div v-show="chooseInstall">
+
+            <div class="form-group">
+
+                <div class="col-sm-2 control-label"></div>
+                <div class="col-sm-10">
+                    <button type="button" class="btn btn-primary" @click="showAppListInfo">
+                        应用选择
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="form-group col-sm-8">
+                <label>文件名称</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkName" readonly/>
+            </div>
+            <div class="form-group col-sm-8">
+                <label>应用包名</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkPackageName" readonly/>
+            </div>
+
+            <div class="form-group col-sm-8"  style="display: none">
+                <label>应用版本名称</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkVersionName"/>
+            </div>
+            <div class="form-group col-sm-8" style="display: none">
+                <label>应用版本号</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkVersionCode"/>
+            </div>
+            <div class="form-group col-sm-8">
+                <label>下载地址</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkcdnUrl" readonly/>
+            </div>
+            <div class="form-group col-sm-8">
+                <label>文件大小</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkSize" readonly/>
+            </div>
+
+            <div class="form-group col-sm-8">
+                <label>应用小图标</label>
+                <img width="100" height="100" id="apkSmallIconSrc"
+                     style="display:none;cursor:pointer;margin-top:20px;"/>
+            </div>
+            <div class="form-group col-sm-8">
+                <label>应用大图标</label>
+                <img width="100" height="100" id="apkBigIconSrc"
+                     style="display:none;cursor:pointer;margin-top:20px;"/>
+            </div>
+            <div class="form-group col-sm-8">
+                <label>应用版本文件名称</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkFileName" readonly/>
+            </div>
+            <div class="form-group col-sm-8">
+                <label>应用积分值</label>
+                <input class="form-control col-sm-8" v-model="ui_cell.apkWeiPoint" readonly/>
+            </div>
+            
+        </div>
+
+        <div class="form-group col-sm-8" v-show="chooseApp">
+            <label>packageName</label>
+            <input class="form-control" v-model="ui_cell.packageName"/>
+        </div>
+        <div class="form-group col-sm-8" v-show="chooseAction || chooseBroadcast || chooseInstall">
+            <label>Action名</label>
+            <input class="form-control" v-model="ui_cell.action"/>
+        </div>
+        <div class="form-group col-sm-8" v-show="chooseApp">
+            <label>className</label>
+            <input class="form-control" v-model="ui_cell.className"/>
+        </div>
+        <div class="form-group col-sm-8">
+            <label>uriString</label>
+            <input class="form-control" v-model="ui_cell.uriString" placeholder="uri string"/>
+        </div>
+        <div class="form-group col-sm-12">
+
+            <div class="form-group">
+                <div class="col-sm-2 control-label">推荐图</div>
+                <div class="col-sm-10">
+                    <input type="file" id="imageUrlFile" name="imageUrlFile"/>
+                    <img width="100" height="100" id="imageUrlFileSrc"
+                         style="display:none;cursor:pointer;margin-top:20px;"
+                         onclick="main.removeIcon('imageUrlFileSrc','confirm')" title="点击删除图片"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+
+            <div class="col-sm-2 control-label">露头图</div>
+            <div class="col-sm-10">
+                <input type="file" id="image2UrlFile" name="image2UrlFile"/>
+                <img width="100" height="100" id="image2UrlFileSrc"
+                     style="display:none;cursor:pointer;margin-top:20px;"
+                     onclick="main.removeIcon('image2UrlFileSrc','confirm')" title="点击删除图片"/>
+            </div>
+        </div>
+
+        <div class="form-group col-sm-12">
+
+            <div class="col-sm-2 control-label">配件海报图</div>
+            <div class="col-sm-10">
+                <input type="file" id="backgroundUrlFile" name="backgroundUrlFile"/>
+                <img width="100" height="100" id="backgroundUrlSrc"
+                     style="display:none;cursor:pointer;margin-top:20px;"
+                     onclick="main.removeIcon('backgroundUrlSrc','confirm')" title="点击删除图片"/>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" @click="saveOrUpdate">保存</button>
+        <!-- 隐藏 待终端实现-->
+        <button type="button" class="btn btn-primary" @click="addSpareCells">添加原子替换项</button>
+    </div>
+
+    <script src="../../js/modules/app/editCellsContent.js"></script>
+</div>

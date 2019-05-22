@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- 该ant脚本用来复制src目录下html, css, js等静态资源到target目录 -->
+<!-- 如果仅对静态资源进行了修改，不需要重新编译整个项目，只需复制对应文件到target就行 -->
+<project name="appstore" basedir="." default="usage">
+	<property name="src.static" value="src/main/resources/static"/>
+	<property name="src.views"  value="src/main/resources/views"/>
+	<property name="src.static.modules.js" value="src/main/resources/static/js/modules"/>
+	<property name="target.static" value="target/classes/static"/>
+	<property name="target.views" value="target/classes/views"/>
+	<property name="target.static.modules.js" value="target/classes/static/js/modules"/>
+
+	<target name="usage" depends="copy-static,copy-views,copy-modules-js" >
+		<echo message=""/>
+		<echo message="appstore build file"/>
+		<echo message="-----------------------------------"/>
+		<echo message=""/>
+		<echo message="Available targets are:"/>
+		<echo message=""/>
+		<echo message="copy-static -- Copy src-static to target-static"/>
+		<echo message="copy-views -- Copy src-views to target-views"/>
+		<echo message= "copy-modules-js -- Copy src-modules-js to target-modules-js"/>
+		<echo message=""/>
+	</target>
+
+	<target name="copy-static" description="copy src-static to target-static">
+		<copy todir="${target.static}" overwrite="true" preservelastmodified="true">
+			<fileset dir="${src.static}">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copy-views" description="copy src-views to target-views">
+		<copy todir="${target.views}" overwrite="true" preservelastmodified="true">
+			<fileset dir="${src.views}">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copy-modules-js" description="copy src-modules-js to target-modules-js">
+		<copy todir="${target.static.modules.js}" overwrite="true" preservelastmodified="true">
+			<fileset dir="${src.static.modules.js}">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+	</target>
+</project>

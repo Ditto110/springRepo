@@ -1,0 +1,60 @@
+# Tomcat
+server:
+    tomcat:
+        uri-encoding: UTF-8
+        max-threads: 1000
+        min-spare-threads: 30
+    port: 8080
+    #打开注释，则通过【http://localhost/appstore】访问
+    context-path: /commonTest
+
+spring:
+    # 环境 dev|test|prof
+    profiles:
+        active: pro
+    # jackson时间格式化
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    http:
+        multipart:
+            max-file-size: 500MB
+            max-request-size: 500MB
+            enabled: true
+    resources: # 指定静态资源的路径
+        static-locations: classpath:/static/,classpath:/views/
+    # 解决同一个tomcat部署多个springboot项目
+    jmx:
+        default-domain: commonTest
+    file:
+        img: http://img.beemarket.tv
+        apkRemote: http://apk.beemarket.tv
+        apkRemoteCDN: http://qtapk.skyworthbox.com
+        apkLocal: http://storeapk.skyworthbox.com
+
+    ftp:
+      userName: vod
+      password: vod@321!
+      ip: 117.25.155.179
+      port: 10021
+    freemarker:
+        request-context-attribute: req
+        suffix: .html
+        content-type: text/html
+        enabled: true
+        cache: false
+        template-loader-path: classpath:/views/
+        charset: UTF-8
+
+# Mybatis配置
+mybatis:
+    mapperLocations: classpath:mapper/**/*.xml
+    configLocation: classpath:mybatis.xml
+# 自定义配置
+config:
+    cacheServers: cache-db1.mipt.cn:7000,cache-db1.mipt.cn:7001,cache-db2.mipt.cn:7002,cache-db2.mipt.cn:7003,cache-db3.mipt.cn:7004,cache-db3.mipt.cn:7005
+    cacheAppInfo:
+        customerIds:
+            include: baofeng
+appstore:
+    systemid: 34

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+    <link rel="stylesheet" href="../../css/main.css">
+
+    <script src="../../libs/jquery.min.js"></script>
+    <script src="../../plugins/layer/layer.js"></script>
+    <script src="../../libs/bootstrap.min.js"></script>
+    <script src="../../libs/vue.min.js"></script>
+    <script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="tab == 'main'">
+        <div class="grid-btn">
+            <div class="form-group col-md-2 form-inline">
+                <label for="use">用途</label>
+                <select id="use" class="form-control" v-model="useSelected">
+                    <option v-for="option in useOptions" :value="option.value">
+                        {{ option.text }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="querySn" @keyup.enter="query"
+                       placeholder="序列号">
+            </div>
+            <!--<div class="form-group col-sm-2">-->
+                <!--<input type="text" class="form-control" v-model="queryDeviceId" @keyup.enter="query"-->
+                       <!--placeholder="设备Id"/>-->
+            <!--</div>-->
+            <a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+            <a class="btn btn-primary" v-if="hasPermission('tudeviceprovide:import')" @click="importExcel"><i
+                    class="fa fa-plus"></i>&nbsp;Excel导入</a>
+            <a class="btn btn-primary" v-if="hasPermission('tudeviceprovide:add')" @click="add"><i
+                    class="fa fa-plus"></i>&nbsp;新增</a>
+            <a class="btn btn-primary" v-if="hasPermission('tudeviceprovide:del')" @click="del"><i
+                    class="fa fa-trash-o"></i>&nbsp;删除</a>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="tab == 'add'" class="panel panel-default">
+        <div class="panel-heading">{{ title }}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 control-label">用途</div>
+                <div class="col-sm-10">
+                    <input readonly="readonly" type="text" class="form-control" v-model="tuDeviceProvide.uses" placeholder=""/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 control-label">序列号</div>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" v-model="tuDeviceProvide.sn" placeholder=""/>
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<div class="col-sm-2 control-label">设备Id</div>-->
+                <!--<div class="col-sm-10">-->
+                    <!--<input type="text" class="form-control" v-model="tuDeviceProvide.deviceid" placeholder=""/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+
+    <div v-show="tab == 'import'" class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">Excel导入</div>
+        </div>
+
+        <div class="panel-body">
+            <div class="form-group col-md-3">
+                <label for="uses">用途：</label>
+                <input id="uses" readonly="readonly" type="text" class="form-control col-md-2" v-model="importUses" placeholder=""/>
+            </div>
+            <div class="col-md-12 form-group">
+                <label for="uploadControl">上传Excel：</label>
+                <div id="fileQueue">
+                </div>
+                <input id="uploadControl" type="file">
+                <div class="well" style="width: 50%; margin-top: 10px">
+                    <p>说明： Excel表中需要包含列名"SN"或"SNNO"或"序列号"，不区分大小写
+                </div>
+            </div>
+            <div class="col-md-12 form-group">
+                <a class="btn btn-warning col-md-2" @click="toMain">返回</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../../js/modules/app/tudeviceprovide.js"></script>
+</body>
+</html>

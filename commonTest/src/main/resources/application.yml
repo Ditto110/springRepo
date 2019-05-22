@@ -1,0 +1,61 @@
+# Tomcat
+server:
+    tomcat:
+        uri-encoding: UTF-8
+        max-threads: 1000
+        min-spare-threads: 30
+    port: 8080
+    #打开注释，则通过【http://localhost/appstore】访问
+    context-path: /commonTest
+
+spring:
+    # 环境 dev|test|prof
+    profiles:
+        active: dev
+    # jackson时间格式化
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    http:
+        multipart:
+            max-file-size: 100MB
+            max-request-size: 100MB
+            enabled: true
+    resources: # 指定静态资源的路径
+        static-locations: classpath:/static/,classpath:/views/
+    # 解决同一个tomcat部署多个springboot项目
+    jmx:
+        default-domain: commonTest
+    file:
+        img: http://gt.beemarket.tv:14000
+        apkRemote: http://apk.beemarket.tv
+        apkRemoteCDN: http://qtapk.skyworthbox.com
+        apkLocal: http://gt.beemarket.tv:14000
+    
+    ftp:
+      userName: vod
+      password: vod@321!
+      ip: 117.25.155.179
+      port: 10021
+    freemarker: 
+        request-context-attribute: req
+        suffix: .html
+        content-type: text/html
+        enabled: true
+        cache: false
+        template-loader-path: classpath:/views/
+        charset: UTF-8  
+
+# Mybatis配置
+mybatis:
+    mapperLocations: classpath:mapper/**/*.xml
+    configLocation: classpath:mybatis.xml
+# 自定义配置
+config:
+    cacheServers: 192.168.52.17:7000,192.168.52.17:7001,192.168.52.17:7002,192.168.52.17:7003,192.168.52.17:7004,192.168.52.17:7005
+    cacheAppInfo:
+        customerIds:
+            include: baofeng
+    redisauth: skyworth@2019
+appstore:
+    systemid: 34

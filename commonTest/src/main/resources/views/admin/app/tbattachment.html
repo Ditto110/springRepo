@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+</head>
+<body>
+	<div id="rrank" v-cloak>
+		<div v-show="showList">
+			<div class="row">
+				<div class="form-group form-inline">  
+					<input type="button" v-if="hasPermission('tbattachment:add')" class="btn btn-primary" @click="createAttach" value="新建配件">
+				</div>
+			</div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+		<div v-show = "!showList" class="panel panel-default">
+			<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">配件名称:</div>
+				   	<div class="col-sm-6">
+				      <input type="text" class="form-control" v-model="attach.name" placeholder=""/>
+				      <input type="hidden" v-model="attach.id" id="attachId" />
+				    </div>
+				</div>
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">配件code:</div>
+				   	<div class="col-sm-6">
+				      <input type="text" class="form-control" v-model="attach.code" placeholder=""/>
+				    </div>
+				</div>
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">背景图片</div>
+				   	<div class="col-sm-6">
+				      <input type="hidden" id="attachBackimageName" v-model = "attach.backimage" />
+					  <input type="file" id=attachBackimageFile name="attachBackimageFile" />
+				  	  <img src="" width="80" height="80" id="attachBackimage" style="display:none;cursor:pointer; margin-top:10px;" /> 	
+				    </div>
+				</div>
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">封面图片</div>
+				   	<div class="col-sm-6">
+				      <input type="hidden" id="attachImageName" v-model = "attach.image" />
+					  <input type="file" id=attachImageFile name="attachImageFile" />
+				  	  <img src="" width="80" height="80" id="attachimage" style="display:none;cursor:pointer; margin-top:10px;" /> 	
+				    </div>
+				</div>
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">右侧展示应用</div>
+				   	<div class="col-sm-6 ">
+						<select class="form-control" v-model = "attach.alignRight">
+							<option v-bind:value="1">否</option>
+							<option v-bind:value="0">是</option>
+						</select>
+				   	</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label"></div> 
+					<input type="button" class="btn btn-primary" @click="save" value="确定"/>
+					&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script src="../../js/common.js"></script>
+	<script src="../../js/modules/app/tbattachment.js"></script>
+</body>
+</html>

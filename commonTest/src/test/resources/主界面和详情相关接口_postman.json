@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "6d168496-06e2-462b-bf9c-86f622fd6d05",
+		"name": "appstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "obtainStartPicture",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "customerid",
+						"value": "30001"
+					},
+					{
+						"key": "storePackageName",
+						"value": "com.mipt.store"
+					},
+					{
+						"key": "storeVersionCode",
+						"value": "60101"
+					},
+					{
+						"key": "devicetypeid",
+						"value": "7075"
+					},
+					{
+						"key": "deviceid",
+						"value": "F44C70717DB91743OrLW8"
+					},
+					{
+						"key": "sn",
+						"value": "0000000000000000000000 "
+					},
+					{
+						"key": "preview",
+						"value": "1",
+						"disabled": true
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://192.168.52.13:8899/appstore/api/obtainStartPicture",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"52",
+						"13"
+					],
+					"port": "8899",
+					"path": [
+						"appstore",
+						"api",
+						"obtainStartPicture"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtainlauncher",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "customerid",
+						"value": "30001"
+					},
+					{
+						"key": "storePackageName",
+						"value": "com.mipt.store"
+					},
+					{
+						"key": "storeVersionCode",
+						"value": "60101"
+					},
+					{
+						"key": "devicetypeid",
+						"value": "7075"
+					},
+					{
+						"key": "deviceid",
+						"value": "F44C70717DB91743OrLW8"
+					},
+					{
+						"key": "sn",
+						"value": "0000000000000000000000 "
+					},
+					{
+						"key": "preview",
+						"value": "1",
+						"disabled": true
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://192.168.52.13:8899/appstore/api/obtainlauncher",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"52",
+						"13"
+					],
+					"port": "8899",
+					"path": [
+						"appstore",
+						"api",
+						"obtainlauncher"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtainDetailRecommand",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "customerid",
+						"value": "30001"
+					},
+					{
+						"key": "storePackageName",
+						"value": "com.mipt.store"
+					},
+					{
+						"key": "storeVersionCode",
+						"value": "60101"
+					},
+					{
+						"key": "devicetypeid",
+						"value": "7075"
+					},
+					{
+						"key": "deviceid",
+						"value": "F44C70717DB91743OrLW8"
+					},
+					{
+						"key": "sn",
+						"value": "0000000000000000000000 "
+					},
+					{
+						"key": "preview",
+						"value": "1",
+						"disabled": true
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://192.168.52.13:8899/appstore/api/obtainDetailRecommand",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"52",
+						"13"
+					],
+					"port": "8899",
+					"path": [
+						"appstore",
+						"api",
+						"obtainDetailRecommand"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "obtainHotSearchApps",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "customerid",
+						"value": "30001"
+					},
+					{
+						"key": "storePackageName",
+						"value": "com.mipt.store"
+					},
+					{
+						"key": "storeVersionCode",
+						"value": "60101"
+					},
+					{
+						"key": "devicetypeid",
+						"value": "7075"
+					},
+					{
+						"key": "deviceid",
+						"value": "F44C70717DB91743OrLW8"
+					},
+					{
+						"key": "sn",
+						"value": "0000000000000000000000 "
+					},
+					{
+						"key": "preview",
+						"value": "1",
+						"disabled": true
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://192.168.52.13:8899/appstore/api/obtainHotSearchApps",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"52",
+						"13"
+					],
+					"port": "8899",
+					"path": [
+						"appstore",
+						"api",
+						"obtainHotSearchApps"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

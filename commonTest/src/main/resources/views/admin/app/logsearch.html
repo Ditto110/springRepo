@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+	name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../css/bootstrap-select.css">
+<link rel="stylesheet"
+	href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet"
+	href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<link rel="stylesheet"
+	href="../../plugins/datetimepicker/bootstrap-datetimepicker.min.css" />
+<link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+<style>
+.control_img {
+	background: #000000
+}
+</style>
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../libs/jquery.dragsort-0.5.2.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/bootstrap-select.js"></script>
+<script
+	src="../../plugins/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script
+	src="../../plugins/datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="../../plugins/daterangepicker/moment.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/FileSaver.js"></script>
+<script src="../../js/Blob.js"></script>
+<script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+
+</head>
+<body>
+	<div id="rrapp" v-cloak>
+		<div v-show="showList">
+			<div class="grid-btn row">
+				<div class="form-group col-sm-2">
+					<label>机型</label>
+					<select class="selectpicker show-tick form-control"
+						name="deviceType" id="deviceType" onchange="vm.devidetypeSelect()" data-live-search="true" data-first-option="false" title="请选择机型" >
+						<optgroup label="机型分组" id="modelGroup"></optgroup>
+						<optgroup label="自选机型" id="modelSingle"></optgroup>
+					</select>
+				</div>
+				<div class="form-group col-sm-2">
+					<label>渠道</label> 
+					<select class="form-control" name="customerName"
+						id="customerId" > 
+					</select>
+				</div>
+				<div class="form-group col-sm-2">
+					<label>应用分类</label> <select class="form-control" name="classId"
+						id="classId">
+						<option value="-1">全部</option>
+						<option v-for = "item in queryParam.classTypeList" v-bind:value = "item.classId">{{item.className}}</option>
+					</select>
+				</div>
+			<!-- 	<div class="form-group col-sm-2">
+					<label>设备ID</label> <input class="form-control" name="deviceId"
+						id="deviceId">
+				</div> -->
+				<div class="form-group col-sm-2">
+					<label>应用名称</label> <input class="form-control" name="appName"
+						id="appName">
+				</div>
+				<div class="form-group col-sm-2">
+					<label>开始日期</label>
+					<div class="input-group date form_date" data-date=""
+						data-date-format="yyyy-MMdd " data-link-field="dtp_input2"
+						data-link-format="yyyy-mm-dd">
+						<input type="text" class="form-control" readonly="readonly"
+							id="startDate" placeholder="点击选择开始时间" /> <span
+							class="input-group-addon"><i
+							class="glyphicon glyphicon-remove"></i></span> <span
+							class="input-group-addon"><i
+							class="glyphicon glyphicon-calendar"></i></span>
+					</div>
+				</div>
+				<div class="form-group col-sm-2">
+					<label>结束日期</label>
+					<div class="input-group date form_date" data-date=""
+						data-date-format="yyyy-MMdd " data-link-field="dtp_input2"
+						data-link-format="yyyy-mm-dd">
+						<input type="text" class="form-control" readonly="readonly"
+							id="endDate" placeholder="点击选择结束时间" /> <span
+							class="input-group-addon"><i
+							class="glyphicon glyphicon-remove"></i></span> <span
+							class="input-group-addon"><i
+							class="glyphicon glyphicon-calendar"></i></span>
+					</div>
+				</div>
+				<div class="form-group col-sm-2">
+						<label></label>
+						<div>
+							<a class="btn btn-default" @click="query">&nbsp;查询</a> 
+							<a class="btn btn-primary" @click="excelExport">&nbsp;excel导出数据</a>
+						</div>
+					<!-- <div>
+					</div> -->
+				</div>
+			</div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+	</div>
+	<script src="../../js/modules/app/logsearch.js"></script>
+</body>
+</html>

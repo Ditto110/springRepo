@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<link rel="stylesheet" href="../../libs/uploadifyfive/uploadifive.css" />
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../libs/uploadifyfive/jquery.uploadifive.js"></script>
+<script src="../../libs/bootstrap-select.js"></script>
+</head>
+<body>
+	<div id="rrank" v-cloak>
+		<div v-show="showList">
+			<div class="row">
+				<div class="form-group form-inline">  
+					<input type="button" v-if="hasPermission('tbrank:add')" class="btn btn-primary" @click="createRank" value="新建榜单">
+					<input type="button" class="btn btn-primary" @click="rankBGPic" value="排行榜背景图管理">
+					<input type="button" class="btn btn-primary" @click="saveOrder" value="保存榜单排序">
+				</div>
+			</div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+		<div v-show = "!showList" class="panel panel-default">
+			<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">行榜名称</div>
+				   	<div class="col-sm-4">
+				      <input type="text" class="form-control" id = "rankName" v-model = "rank.rankName" placeholder=""/>
+				      <input type="hidden"  id="rankId" v-model = "rank.id"/>
+				    </div>
+				</div>
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">榜单是否显示</div>
+				   	<div class="col-sm-6" >
+				   		<div class="col-sm-3">
+				   			<label for="rank_display">
+								<input type="radio"  v-model = "rank.display" id = "rank_display" value="1">&nbsp;是
+				   			</label>
+				   		</div>
+				   		<div class="col-sm-3">
+				   			<label for="rank_hide">
+								<input type="radio"  v-model = "rank.display" id = "rank_hide" value="0">&nbsp;否
+				   			</label>
+				   		</div>
+				   	</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label" style="color: red;">所属分类</div>
+					<div class="col-sm-4">
+						<select class="form-control" id = "first_class" onchange="loadSubClass()" ></select>
+					</div>
+					<div class="col-sm-2">
+					</div>
+					<div class="col-sm-5">
+						<select class="form-control" id = "sub_class"  multiple="true">
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+				   	<div class="col-sm-2 control-label">默认应用数量</div>
+				   	<div class="col-sm-4 ">
+						<select class="form-control" id = "rankCountLimit" v-model = "rank.rankCount">
+							<option value="10">10 个</option>
+							<option value="20">20 个</option>
+							<option value="30">30 个</option>
+							<option value="50">50 个</option>
+						</select>
+				   	</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label"></div> 
+					<input type="button" class="btn btn-primary" @click="save" value="确定"/>
+					&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script src="../../js/common.js"></script>
+	<script src="../../js/modules/app/tbrank.js"></script>
+</body>
+</html>
