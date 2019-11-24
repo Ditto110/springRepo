@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<title>组件测试2</title>
+    <link rel="stylesheet" href="libs/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="libs/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+    </style>
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script src="libs/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="libs/jqgrid/grid.locale-cn.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+</head>
+
+<body>
+<div class="row">
+    <div id="testVue">
+        <div class="span6">
+            <ul class="nav nav-tabs">
+                <li v-for='(item,index) in menueList' :class='{active:(item.id===defaultActive)}' :value="item.id">
+                    <a href="#" @click="getData(item.id)">{{item.name}}</a>
+                </li>
+            </ul>
+        </div>
+        <my_template :abilityId="abilityId"></my_template>
+
+    </div>
+</div>
+<script>
+    $.jgrid.defaults.width = 1000;
+    $.jgrid.defaults.responsive = true;
+    $.jgrid.defaults.styleUI = 'Bootstrap';
+
+    //构建一个组件
+    var component_table = Vue.extend({
+        data: function () {
+            return {
+                foods: [
+                    {id: 0, name: '蔬菜'},
+                    {id: 1, name: '奶酪'},
+                    {id: 2, name: '随便其它什么人吃的东西'}
+                ]
+            }
+        },
+        props: ['abilityId', 'testValue'],
+        template: '<div>' +
+            '<span>{{abilityId}}</span>' +
+            '<div class="row">' +
+            '<form class="form-horizontal" role="form">' +
+            '<div class="form-group col-md-4"><label>班次</label><input class="form-control" v-model="testValue"></div>'+
+            '<div class="form-group col-md-4"><label>出发地</label><input class="form-control" v-model="testValue"></div>'+
+            '<div class="form-group col-md-4"><label>目的地</label><input class="form-control" v-model="testValue"></div>'+
+            '</form>' +
+            '</div>' +
+            '<table id="listInfo"></table>' +
+            '<div id="pageInfo"></div>' +
+            '<ul>' +
+            '<li v-for="(item,index) in foods" :key="item.id">{{item.name}}</li>' +
+            '</ul>'+
+            '</div>'
+    });
+    new Vue({
+        data: {
+            abilityId: 1,
+            testValue: 2,
+            defaultActive: 1,
+            rawHtml: "<span style='color: red'>xxx</span>",
+            menueList: [{id:1, name: "国内航班"},{id:2, name: "欧洲航班"},{id:3, name: "日韩航班"},{id:4, name: "东南亚航班"}]
+        },
+        methods: {
+            getData: function (activeId) {
+                this.defaultActive = activeId;
+                $("#listInfo").jqGrid().trigger('reloadGrid');
+            }
+        },
+        //注册为局部组件
+        components: {
+            'my_template': component_table
+        }
+    }).$mount("#testVue");
+
+    $("#listInfo").jqGrid({
+        url: '/demo2/admin/tbRank/list',
+        postData: {},
+        datatype: "json",
+        colModel: [
+            { label: 'date', name: 'appid', index: 'appid', width: 80},
+            { label: 'flightNO', name: 'aliasName', index: 'aliasName', width: 60},
+            { label: 'from', name: 'aliasName', index: 'aliasName', width: 60},
+            { label: 'to', name: 'aliasName', index: 'aliasName', width: 60},
+            { label: 'estimateDate', name: 'aliasName', index: 'aliasName', width: 60}
+        ],
+        viewrecords: true,
+        height: 450,
+        rowNum: 30,
+        rowList : [10,30,50],
+        // rownumbers: true,
+        // rownumWidth: 25,
+        autowidth:true,
+        multiselect: true,
+        pager : '#pageInfo',
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page",
+            rows:"limit",
+            order: "order"
+        },
+        gridComplete:function(){}
+    });
+</script>
+</body>
+</html>

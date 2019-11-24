@@ -5,7 +5,7 @@ spring:
             driverClassName: com.mysql.jdbc.Driver
             # 不需要切源
             default: 
-                 url: jdbc:mysql://localhost:3306/appstorev3?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+                 url: jdbc:mysql://localhost:3306/commonstatmeta?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
                  username: root
                  password:
             initial-size: 10
@@ -33,18 +33,17 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
-   
 logging:
-        config: classpath:log4j2-dev.xml
+        config: classpath:log4j2-test.xml
 
 cas.config:
 #cas配置项
-    server: http://gt.beemarket.tv/casv2
-    siteUrl: http://localhost:8080/pmall
-    adminUrl: http://gt.beemarket.tv/adminv2/index
+    server: http://gt.beevideo.tv/casv2
+    siteUrl: http://gt.beevideo.tv/pmall
+    adminUrl: http://gt.beevideo.tv/adminv2/index
 admin.rpc:
-##Admin RPC接口配置参数 admin.rpc.adminserver
-    server: gt.beemarket.tv:80
+#Admin RPC接口配置参数 admin.rpc.adminserver
+    server: gt.beevideo.tv:80
     proServerServiceUrl: /adminv2/adminservice/IAdminProService
     connTimeout: 5000
     readTimeout: 2000000

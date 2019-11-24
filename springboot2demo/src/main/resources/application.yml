@@ -1,0 +1,23 @@
+server:
+    tomcat:
+        uri-encoding: UTF-8
+        max-threads: 1000
+        min-spare-threads: 30
+    port: 8081
+#    context-path: /s
+    servlet:
+        context-path: /s
+spring:
+    resources:
+        static-locations: classpath:/static/,classpath:/templates/
+#spring:
+#    webflux:
+#        static-path-pattern: /templates/**
+
+#访问方式
+#    http://localhost:8081/s/static/index2.html
+#    http://localhost:8081/s/templates/index2.html
+# 参考   https://www.cnblogs.com/yql1986/p/9219137.html
+#spring:
+#    mvc:
+#        static-path-pattern: /templates/**

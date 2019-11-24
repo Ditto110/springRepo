@@ -1,0 +1,69 @@
+.grid-stack-container{
+    background-color: #e9f2f5;
+    padding: 15px 0;
+    min-height: 450px;
+}
+.grid-stack .grid-stack-item .grid-stack-item-content{
+    background-color: #18bc9c;
+    color: #2c3e50;
+}
+.grid-stack .grid-stack-item .item-box{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.grid-stack .item-all{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    background-color: rgba(0,0,0,0.65);
+    color: #ffffff;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    cursor: move;
+    z-index: 20;
+}
+
+.grid-stack .item-header{
+    width: 100%;
+    position: absolute;
+    top: 0;
+    background-color: rgba(0,0,0,0.5);
+    color: #ffffff;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    cursor: move;
+    display: none;
+    z-index: 20;
+}
+
+.grid-stack .item-header .size-info{
+    color: #FF0000;
+}
+.grid-stack .grid-stack-item:hover .item-header,.grid-stack .grid-stack-item:hover .item-footer{
+    display: block;
+}
+.grid-stack .item-footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 3px 7px;
+    background-color: rgba(0,0,0,0.5);
+    color: #ffffff;
+    display: none;
+    z-index: 20;
+}
+.grid-stack .item-footer .menu-item{
+    cursor: pointer;
+}
+.grid-stack .item-content{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fm.admin.stat.dao.StatJobDao">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.fm.admin.stat.entity.StatJobEntity" id="statJobMap">
+        <result property="id" column="id"/>
+        <result property="jobName" column="job_name"/>
+        <result property="jobSubject" column="job_subject"/>
+        <result property="jobDesc" column="job_desc"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.fm.admin.stat.entity.StatJobEntity">
+		select * from tb_stat_job where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.fm.admin.stat.entity.StatJobEntity">
+		select * from tb_stat_job
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_stat_job 
+	</select>
+	 
+	<insert id="save" parameterType="com.fm.admin.stat.entity.StatJobEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_stat_job
+		(
+			`job_name`, 
+			`job_subject`, 
+			`job_desc`
+		)
+		values
+		(
+			#{jobName}, 
+			#{jobSubject}, 
+			#{jobDesc}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.fm.admin.stat.entity.StatJobEntity">
+		update tb_stat_job 
+		<set>
+			<if test="jobName != null">`job_name` = #{jobName}, </if>
+			<if test="jobSubject != null">`job_subject` = #{jobSubject}, </if>
+			<if test="jobDesc != null">`job_desc` = #{jobDesc}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_stat_job where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_stat_job where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>
