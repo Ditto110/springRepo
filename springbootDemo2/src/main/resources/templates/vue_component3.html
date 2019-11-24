@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<title>组件测试3</title>
+    <link rel="stylesheet" href="libs/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="libs/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+    </style>
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script src="libs/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="libs/jqgrid/grid.locale-cn.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+</head>
+
+<body>
+<div class="row">
+    <div id="testVue">
+        <div class="span6">
+            <ul class="nav nav-tabs">
+                <a href="#" @click="tempCom='c1'">111</a>
+                <a href="#" @click="tempCom='c2'">222</a>
+            </ul>
+        </div>
+        <component :is="tempCom"></component>
+    </div>
+</div>
+<script>
+    $.jgrid.defaults.width = 1000;
+    $.jgrid.defaults.responsive = true;
+    $.jgrid.defaults.styleUI = 'Bootstrap';
+
+    //构建一个组件
+    var c1 = Vue.extend({
+        template: '<div>aaaa</div>'
+    });
+    //构建一个组件
+    var c2 = Vue.extend({
+        template: '<div>bbbb</div>'
+    });
+
+    new Vue({
+        data: {
+            tempCom: ""
+        },
+        methods: {
+            getData: function (activeId) {
+                this.defaultActive = activeId;
+                $("#listInfo").jqGrid().trigger('reloadGrid');
+            }
+        },
+        //注册为局部组件
+        components: {
+            'c1': c1,
+            'c2': c2
+        }
+    }).$mount("#testVue");
+
+</script>
+</body>
+</html>
